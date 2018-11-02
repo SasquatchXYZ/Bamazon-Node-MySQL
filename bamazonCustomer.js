@@ -1,3 +1,5 @@
+'use strict';
+
 const colors = require('colors');
 const inquirer = require('inquirer');
 const mysql = require('mysql');
@@ -16,7 +18,7 @@ const connection = mysql.createConnection({
     database: 'bamazon'
 });
 
-connection.connect(function(err) {
+connection.connect(function (err) {
     if (err) throw err;
     console.log(`Connected as ID: ${connection.threadId}`);
     //connection.end();
@@ -24,7 +26,7 @@ connection.connect(function(err) {
 });
 
 function displayInventory() {
-    connection.query(queryAll, function(err, res) {
+    connection.query(queryAll, function (err, res) {
         if (err) throw err;
         idArray = [];
         console.table(res);
@@ -49,15 +51,15 @@ function queryUsers() {
                 name: 'quantity_request',
                 type: 'input',
                 message: 'How many would you like to purchase?',
-                validate: function(value) {
+                validate: function (value) {
                     return isNaN(value) === false;
                 }
             }
         ])
-        .then(function(answers) {
+        .then(function (answers) {
             //console.log(answers.id, answers.quantity_request);
-            connection.query(`${queryAll} ${queryWhere}`, {item_id: answers.id}, function(err, response) {
-                if(err) throw err;
+            connection.query(`${queryAll} ${queryWhere}`, {item_id: answers.id}, function (err, response) {
+                if (err) throw err;
                 //console.log(response);
                 //console.log(`${response[0].item_id}, ${response[0].product_name}, ${response[0].stock_quantity}`);
                 if (response[0].stock_quantity >= answers.quantity_request) {
@@ -67,11 +69,11 @@ function queryUsers() {
                         [{
                             stock_quantity: (response[0].stock_quantity - answers.quantity_request)
                         },
-                        {
-                            item_id: answers.id
-                        }],
-                        function(error, response) {
-                        //console.log(`${response.affectedRows} Updated.`.green);
+                            {
+                                item_id: answers.id
+                            }],
+                        function (error, response) {
+                            //console.log(`${response.affectedRows} Updated.`.green);
                         });
                     console.log(`Your total is $${subTotal}.  Thank you for your purchase!`.green);
                     //exitOption();
@@ -92,7 +94,7 @@ function exitOption() {
             message: 'Would you like to make another purchase?',
             default: true
         })
-        .then(function(response) {
+        .then(function (response) {
             if (response.another) {
                 displayInventory();
             } else {
@@ -109,7 +111,7 @@ function queryUsersManyItems() {
                 name: 'id',
                 type: 'input',
                 message: 'What is the ID number of the product you would like to purchase?'.magenta,
-                validate: function(value) {
+                validate: function (value) {
                     return isNaN(value) === false;
                 }
             },
@@ -117,15 +119,15 @@ function queryUsersManyItems() {
                 name: 'quantity_request',
                 type: 'input',
                 message: 'How many would you like to purchase?',
-                validate: function(value) {
+                validate: function (value) {
                     return isNaN(value) === false;
                 }
             }
         ])
-        .then(function(answers) {
+        .then(function (answers) {
             if (idArray.indexOf(parseInt(answers.id)) > -1) {
-                connection.query(`${queryAll} ${queryWhere}`, {item_id: answers.id}, function(err, response) {
-                    if(err) throw err;
+                connection.query(`${queryAll} ${queryWhere}`, {item_id: answers.id}, function (err, response) {
+                    if (err) throw err;
                     if (response[0].stock_quantity >= answers.quantity_request) {
                         let subTotal = (answers.quantity_request * response[0].price).toFixed(2);
                         connection.query(`${queryUpdate} ${queryWhere}`,
@@ -135,7 +137,7 @@ function queryUsersManyItems() {
                                 {
                                     item_id: answers.id
                                 }],
-                            function(error, response) {
+                            function (error, response) {
                             });
                         console.log(`Your total is $${subTotal}.  Thank you for your purchase!`.green);
                     } else {
@@ -147,5 +149,5 @@ function queryUsersManyItems() {
                 console.log(`${answers.id} is not an appropriate ID Number.`.red);
                 exitOption();
             }
-        })
+        });
 }
