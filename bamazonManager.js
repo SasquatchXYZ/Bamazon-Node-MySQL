@@ -74,7 +74,7 @@ function lowInventory() {
             console.table(res);
             managerMenu();
         } else {
-            console.log('There are no low inventory items.'.green)
+            console.log('There are no low inventory items.'.green);
             managerMenu();
         }
     });
