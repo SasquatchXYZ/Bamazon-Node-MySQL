@@ -6,7 +6,7 @@ const cTable = require('console.table');
 const queryAll = "SELECT * FROM products";
 const queryWhere = "WHERE ?";
 const queryUpdate = "UPDATE products SET ?";
-let idArray = [];
+let idArray;
 
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -26,19 +26,13 @@ connection.connect(function(err) {
 function displayInventory() {
     connection.query(queryAll, function(err, res) {
         if (err) throw err;
-        //console.log(res);
-        //connection.end();
+        idArray = [];
         console.table(res);
         for (let k = 0; k < res.length; k++) {
             idArray.push(res[k].item_id);
         }
-
+        console.log(idArray);
         queryUsers();
-        //console.log(idArray);
-        /*for (let k = 0; k < res.length; k++) {
-            console.log(`Item ID: ${res[k].item_id} || Product Name: ${res[k].product_name} || Department: ${res[k].department_name} || Price: ${res[k].price} || Quantity: ${res[k].stock_quantity}`);
-        }*/
-        //connection.end();
     });
 }
 
@@ -106,4 +100,52 @@ function exitOption() {
                 connection.end();
             }
         });
+}
+
+function queryUsersManyItems() {
+    inquirer
+        .prompt([
+            {
+                name: 'id',
+                type: 'input',
+                message: 'What is the ID number of the product you would like to purchase?'.magenta,
+                validate: function(value) {
+                    return isNaN(value) === false;
+                }
+            },
+            {
+                name: 'quantity_request',
+                type: 'input',
+                message: 'How many would you like to purchase?',
+                validate: function(value) {
+                    return isNaN(value) === false;
+                }
+            }
+        ])
+        .then(function(answers) {
+            if (idArray.indexOf(parseInt(answers.id)) > -1) {
+                connection.query(`${queryAll} ${queryWhere}`, {item_id: answers.id}, function(err, response) {
+                    if(err) throw err;
+                    if (response[0].stock_quantity >= answers.quantity_request) {
+                        let subTotal = (answers.quantity_request * response[0].price).toFixed(2);
+                        connection.query(`${queryUpdate} ${queryWhere}`,
+                            [{
+                                stock_quantity: (response[0].stock_quantity - answers.quantity_request)
+                            },
+                                {
+                                    item_id: answers.id
+                                }],
+                            function(error, response) {
+                            });
+                        console.log(`Your total is $${subTotal}.  Thank you for your purchase!`.green);
+                    } else {
+                        console.log('Insufficient Quantity! Please make another selection.'.bold.red);
+                    }
+                    exitOption();
+                });
+            } else {
+                console.log(`${answers.id} is not an appropriate ID Number.`.red);
+                exitOption();
+            }
+        })
 }
