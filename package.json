@@ -1,0 +1,26 @@
+{
+  "name": "Bamazon-Node-MySQL",
+  "version": "1.0.0",
+  "description": "Homework 12 - Node.js &amp; MySQL Storefront CLI App",
+  "main": "bamazonCustomer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SasquatchXYZ/Bamazon-Node-MySQL.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SasquatchXYZ/Bamazon-Node-MySQL/issues"
+  },
+  "homepage": "https://github.com/SasquatchXYZ/Bamazon-Node-MySQL#readme",
+  "dependencies": {
+    "colors": "^1.3.2",
+    "console.table": "^0.10.0",
+    "inquirer": "^6.2.0",
+    "mysql": "^2.16.0"
+  }
+}
