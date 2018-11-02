@@ -5,6 +5,7 @@ const cTable = require('console.table');
 
 const queryAll = "SELECT * FROM products";
 const queryWhere = "WHERE ?";
+const queryUpdate = "UPDATE products SET ?";
 let idArray = [];
 
 const connection = mysql.createConnection({
@@ -62,15 +63,47 @@ function queryUsers() {
         .then(function(answers) {
             //console.log(answers.id, answers.quantity_request);
             connection.query(`${queryAll} ${queryWhere}`, {item_id: answers.id}, function(err, response) {
-                console.log(`${response[0].item_id}, ${response[0].product_name}, ${response[0].stock_quantity}`);
+                if(err) throw err;
+                //console.log(response);
+                //console.log(`${response[0].item_id}, ${response[0].product_name}, ${response[0].stock_quantity}`);
                 if (response[0].stock_quantity >= answers.quantity_request) {
-                    console.log('you can buy this!'.rainbow);
-                    connection.end();
+                    //console.log('you can buy this!'.rainbow);
+                    let subTotal = (answers.quantity_request * response[0].price).toFixed(2);
+                    connection.query(`${queryUpdate} ${queryWhere}`,
+                        [{
+                            stock_quantity: (response[0].stock_quantity - answers.quantity_request)
+                        },
+                        {
+                            item_id: answers.id
+                        }],
+                        function(error, response) {
+                        //console.log(`${response.affectedRows} Updated.`.green);
+                        });
+                    console.log(`Your total is $${subTotal}.  Thank you for your purchase!`.green);
+                    //exitOption();
                 } else {
                     console.log('Insufficient Quantity! Please make another selection.'.bold.red);
-                    queryUsers();
+                    //exitOption();
                 }
+                exitOption();
             });
-            //connection.end();
+        });
+}
+
+function exitOption() {
+    inquirer
+        .prompt({
+            name: 'another',
+            type: 'confirm',
+            message: 'Would you like to make another purchase?',
+            default: true
+        })
+        .then(function(response) {
+            if (response.another) {
+                displayInventory();
+            } else {
+                console.log('Thank you for your business.  Please come again!'.yellow);
+                connection.end();
+            }
         });
 }
