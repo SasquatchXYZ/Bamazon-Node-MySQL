@@ -1,3 +1,4 @@
+'use strict';
 
 const colors = require('colors');
 const inquirer = require('inquirer');
@@ -75,5 +76,39 @@ function lowInventory() {
 }
 
 function restockInventory() {
-
+    idArray = [];
+    connection.query("SELECT item_id FROM products", function(error, res) {
+        if (error) throw error;
+        res.forEach(item => {
+            idArray.push(item.item_id);
+        });
+    });
+    inquirer
+        .prompt([
+            {
+                name: 'id',
+                type: 'input',
+                message: 'What is the ID number of the product you wish to restock?',
+                validate: function(value) {
+                    return isNaN(value) === false;
+                }
+            },
+            {
+                name: 'restock_quantity',
+                type: 'input',
+                message: 'How many should be added to the inventory?',
+                validate: function(value) {
+                    return isNaN(value) === false;
+                }
+            }
+        ])
+        .then(function(update) {
+            console.log(update);
+            if (idArray.includes(parseInt(update.id)) === true) {
+                console.log('you can update this')
+            } else {
+                console.log(`${update.id} is not a valid ID Number currently in the Stock System`);
+                managerMenu();
+            }
+        })
 }
