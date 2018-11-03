@@ -5,6 +5,7 @@ const inquirer = require('inquirer');
 const mysql = require('mysql');
 const cTable = require('console.table');
 
+const customerQuery = "SELECT item_id, product_name, price FROM products";
 const queryAll = "SELECT * FROM products";
 const queryWhere = "WHERE ?";
 const queryUpdate = "UPDATE products SET ?";
@@ -104,6 +105,13 @@ function exitOption() {
         });
 }
 
+
+
+
+// This is reserved for if the store expands and has a very large amount of different items
+// (i.e Walmart or Target), where instead of a list of the item IDs the customer can scroll through,
+// which might take eons with 200+ items.  The customer will simply be able to enter the number.
+// I made this function just in case... optimism, American Dream...
 function queryUsersManyItems() {
     inquirer
         .prompt([
