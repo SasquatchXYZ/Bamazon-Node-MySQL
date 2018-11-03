@@ -8,6 +8,8 @@ const cTable = require('console.table');
 const queryAll = "SELECT * FROM departments";
 const queryNew = "INSERT INTO departments SET ?";
 
+let deptIDArray;
+
 const connection = mysql.createConnection({
     host: 'localhost',
     port: '3306',
@@ -53,9 +55,13 @@ function supervisorMenu(){
 
 
 function updateOverhead() {
+    deptIDArray = [];
     connection.query(queryAll, function(err, res) {
         if (err) throw err;
         console.table(res);
+        for (let n = 0; n <res.length; n++){
+            deptIDArray.push(res[n].department_id);
+        }
         supervisorMenu();
     })
 }
