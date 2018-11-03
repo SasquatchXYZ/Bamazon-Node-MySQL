@@ -129,6 +129,7 @@ function restockInfo() {
 
 function restockInventory(id, quantity) {
     connection.query(`${queryUpdate} ${queryWhere}`, [{stock_quantity: quantity}, {item_id: id}], function (err, res) {
+        if (err) throw err;
         console.log(`${res.affectedRows} successfully updated.`);
         restockMenu();
     });
@@ -196,7 +197,7 @@ function newProduct() {
                 }
             }
         ])
-        .then(function(answers) {
+        .then(function (answers) {
             let newPrice = (Math.floor(parseFloat(answers.newPrice) * 100) / 100); // Convert to number with accurate 2 decimal places.
             let newQuantity = parseInt(answers.newQuantity); // Convert to number, remove decimals (you can't have half a product.
             connection.query(queryNew,
@@ -206,9 +207,9 @@ function newProduct() {
                     price: newPrice,
                     stock_quantity: newQuantity
                 },
-                function(err, res) {
-                console.log(`${res.affectedRows} New Product added to the Stock System.`.green);
-                newMenu();
+                function (err, res) {
+                    console.log(`${res.affectedRows} New Product added to the Stock System.`.green);
+                    newMenu();
                 })
 
             /*console.log(answers.newProduct);

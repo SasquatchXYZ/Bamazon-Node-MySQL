@@ -9,7 +9,7 @@ CREATE TABLE products (
   department_name VARCHAR(30) NULL,
   price DECIMAL(10,2) NOT NULL,
   stock_quantity INT(10) DEFAULT 0,
-  product_sales DECIMAL(16,2) NULL,
+  product_sales DECIMAL(16,2) DEFAULT 0,
   PRIMARY KEY (item_id)
 );
 
