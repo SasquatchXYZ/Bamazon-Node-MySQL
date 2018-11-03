@@ -159,6 +159,10 @@ function restockMenu() {
         });
 }
 
+function newProduct() {
+
+}
+
 
 /*
 function restockInventory() {
