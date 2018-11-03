@@ -114,6 +114,7 @@ function restockInfo() {
             let updateID = parseInt(update.id);
             if (idArray.includes(updateID) === true) {
                 connection.query("SELECT stock_quantity FROM products WHERE ?", {item_id: update.id}, function (err, res) {
+                    if (err) throw err;
                     //console.log(res[0].stock_quantity);
                     let updateQuantity = res[0].stock_quantity + parseInt(update.restock_quantity);
                     //console.log(updateID, updateQuantity);
@@ -174,8 +175,8 @@ function newProduct() {
                 message: 'What is the Department for this new product?'.cyan,
                 choices: [
                     'Apparel', 'Arts & Crafts', 'Automotive', 'Baby', 'Electronics', 'Food',
-                    'Furniture', 'Health & Beauty', 'Home & Office', 'Homegoods', 'Jewelry',
-                    'Pet', 'Seasonal', 'Sporting Goods', 'Tools', 'Toys & Games', 'Everything Else'
+                    'Furniture', 'Health & Beauty', 'Home & Office', 'Jewelry', 'Pet',
+                    'Seasonal', 'Sporting Goods', 'Tools', 'Toys & Games', 'Everything Else'
                 ]
             },
             {

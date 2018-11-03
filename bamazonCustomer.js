@@ -77,6 +77,7 @@ function queryUsers() {
                             //console.log(`${response.affectedRows} Updated.`.green);
                         });
                     console.log(`Your total is $${subTotal}.  Thank you for your purchase!`.green);
+                    updateProductSales(answers.id, subTotal);
                     //exitOption();
                 } else {
                     console.log('Insufficient Quantity! Please make another selection.'.bold.red);
@@ -105,6 +106,15 @@ function exitOption() {
         });
 }
 
+function updateProductSales(id, sales) {
+    console.log(id, sales);
+    connection.query(`SELECT product_sales FROM products ${queryWhere}`, {item_id: id}, function(err, res) {
+        if (err) throw err;
+        console.log(res);
+        console.log(res[0].product_sales);
+        console.log(typeof res[0].product_sales);
+    })
+}
 
 
 
@@ -148,6 +158,7 @@ function queryUsersManyItems() {
                             function (error, response) {
                             });
                         console.log(`Your total is $${subTotal}.  Thank you for your purchase!`.green);
+                        updateProductSales(answers.id, subTotal);
                     } else {
                         console.log('Insufficient Quantity! Please make another selection.'.bold.red);
                     }
