@@ -8,6 +8,7 @@ const cTable = require('console.table');
 const queryAll = "SELECT * FROM products";
 const queryWhere = "WHERE ?";
 const queryUpdate = "UPDATE products SET ?";
+const queryNew = "INSERT INTO products SET ?";
 let idArray;
 
 const connection = mysql.createConnection({
@@ -160,9 +161,89 @@ function restockMenu() {
 }
 
 function newProduct() {
+    inquirer
+        .prompt([
+            {
+                name: 'newProduct',
+                type: 'input',
+                message: 'What is the name of the new product?'.magenta
+            },
+            {
+                name: 'newDepartment',
+                type: 'list',
+                message: 'What is the Department for this new product?'.cyan,
+                choices: [
+                    'Apparel', 'Arts & Crafts', 'Automotive', 'Baby', 'Electronics', 'Food',
+                    'Furniture', 'Health & Beauty', 'Home & Office', 'Homegoods', 'Jewelry',
+                    'Pet', 'Seasonal', 'Sporting Goods', 'Tools', 'Toys & Games', 'Everything Else'
+                ]
+            },
+            {
+                name: 'newPrice',
+                type: 'input',
+                message: `What is the new product's price?`.green,
+                validate: function (value) {
+                    return isNaN(value) === false;
+                }
+            },
+            {
+                name: 'newQuantity',
+                type: 'input',
+                message: 'How many should be added to the inventory?'.yellow,
+                validate: function (value) {
+                    return isNaN(value) === false;
+                }
+            }
+        ])
+        .then(function(answers) {
+            let newPrice = (Math.floor(parseFloat(answers.newPrice) * 100) / 100); // Convert to number with accurate 2 decimal places.
+            let newQuantity = parseInt(answers.newQuantity); // Convert to number, remove decimals (you can't have half a product.
+            connection.query(queryNew,
+                {
+                    product_name: answers.newProduct,
+                    department_name: answers.newDepartment,
+                    price: newPrice,
+                    stock_quantity: newQuantity
+                },
+                function(err, res) {
+                console.log(`${res.affectedRows} New Product added to the Stock System.`.green);
+                newMenu();
+                })
 
+            /*console.log(answers.newProduct);
+            console.log(answers.newDepartment);
+            console.log(newPrice);
+            console.log(parseInt(answers.newQuantity));
+            connection.end();*/
+        });
 }
 
+function newMenu() {
+    inquirer
+        .prompt({
+            name: 'selection',
+            type: 'list',
+            message: 'What would you like to do?'.yellow,
+            choices: [
+                'Main Menu',
+                'Add More New Products',
+                'Exit'
+            ]
+        })
+        .then(function (response) {
+            switch (response.selection) {
+                case 'Main Menu':
+                    managerMenu();
+                    break;
+                case 'Add More New Products':
+                    newProduct();
+                    break;
+                case 'Exit':
+                    connection.end();
+                    break;
+            }
+        });
+}
 
 /*
 function restockInventory() {

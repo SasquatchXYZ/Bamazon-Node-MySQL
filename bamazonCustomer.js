@@ -34,7 +34,7 @@ function displayInventory() {
         for (let k = 0; k < res.length; k++) {
             idArray.push(res[k].item_id);
         }
-        console.log(idArray);
+        //console.log(idArray);
         queryUsers();
     });
 }
