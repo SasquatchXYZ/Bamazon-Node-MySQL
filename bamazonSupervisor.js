@@ -75,7 +75,7 @@ function updateDepartment() {
             inquirer
                 .prompt(
                     {
-                        name: 'dept',
+                        name: 'pick',
                         type: 'list',
                         message: 'Would you like to:?'.yellow,
                         choices: [
@@ -83,14 +83,24 @@ function updateDepartment() {
                             'Remove Department',
                             'Exit'
                         ]
+                    },
+                    {
+                        name: 'ID'
+                        type: 'input',
+                        message: 'What is the ID number?'.red,
+                        validate: function(value) {
+                            return isNaN(value) === false;
+                        }
                     })
                 .then(function (response) {
-                    switch (response.selection) {
+                    let funcone = response.pick;
+                    let functwo = parseInt(response.ID);
+                    switch (response.pick) {
                         case 'Update Overhead':
-                            update();
+                            update(funcone, functwo);
                             break;
                         case 'Remove Department':
-                            rmDept();
+                            rmDept(funcone, functwo);
                             break;
                         case 'Exit':
                             connection.end();
