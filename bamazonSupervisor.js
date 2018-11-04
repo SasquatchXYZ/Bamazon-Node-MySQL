@@ -18,13 +18,13 @@ const connection = mysql.createConnection({
     database: 'bamazon'
 });
 
-connection.connect(function(err) {
+connection.connect(function (err) {
     if (err) throw err;
     //console.log(`Connected as ID: ${connection.threadId}`);
     supervisorMenu();
 });
 
-function supervisorMenu(){
+function supervisorMenu() {
     inquirer
         .prompt({
             name: 'apple',
@@ -35,13 +35,13 @@ function supervisorMenu(){
                 'Create New Department',
                 'Exit']
         })
-        .then(function(pick) {
+        .then(function (pick) {
             switch (pick.apple) {
                 case 'View Product Sales by Department':
                     departmentSales();
                     break;
-                case 'View/Update Department Overhead Costs':
-                    updateOverhead();
+                case 'View/Update Department':
+                    updateDepartment();
                     break;
                 case 'Create New Department':
                     createDepartment();
@@ -53,17 +53,60 @@ function supervisorMenu(){
         });
 }
 
+function departmentSales() {
+    let newCol1 = `SELECT department_name, SUM(product_sales) FROM products GROUP BY department_name`;
+    //let query = `SELECT * FROM departments LEFT JOIN ${newCol1} ON d.department_name = p.department_name`;
+    let query = `SELECT * FROM a.departments INNER JOIN (SUM(b.product_sales) FROM b.products GROUP by b.department_name) ON a.department_name = b.department_name`;
 
-function updateOverhead() {
-    deptIDArray = [];
-    connection.query(queryAll, function(err, res) {
+    connection.query(newCol1, function (err, res) {
         if (err) throw err;
         console.table(res);
-        for (let n = 0; n <res.length; n++){
-            deptIDArray.push(res[n].department_id);
+    });
+}
+
+function updateDepartment() {
+    deptIDArray = [];
+    connection.query(queryAll, function (err, res) {
+            if (err) throw err;
+            console.table(res);
+            for (let n = 0; n < res.length; n++) {
+                deptIDArray.push(res[n].department_id);
+            }
+            inquirer
+                .prompt(
+                    {
+                        name: 'dept',
+                        type: 'list',
+                        message: 'Would you like to:?'.yellow,
+                        choices: [
+                            'Update Overhead',
+                            'Remove Department',
+                            'Exit'
+                        ]
+                    })
+                .then(function (response) {
+                    switch (response.selection) {
+                        case 'Update Overhead':
+                            update();
+                            break;
+                        case 'Remove Department':
+                            rmDept();
+                            break;
+                        case 'Exit':
+                            connection.end();
+                            break;
+                    }
+                });
         }
-        supervisorMenu();
-    })
+    )
+}
+
+function update() {
+
+}
+
+function rmDept() {
+
 }
 
 function createDepartment() {
@@ -78,22 +121,22 @@ function createDepartment() {
                 name: 'newOverhead',
                 type: 'input',
                 message: 'What is the overhead for this new Department?'.red,
-                validate: function(value) {
+                validate: function (value) {
                     return isNaN(value) === false;
                 }
             }
         ])
-        .then(function(selection) {
+        .then(function (selection) {
             let newOverhead = parseInt(selection.newOverhead);
             connection.query(queryNew,
                 {
                     department_name: selection.newDepartment,
                     over_head_costs: newOverhead
                 },
-                function(err, res) {
-                if (err) throw err;
-                console.log(`${res.affectedRows} New Department Added`.green);
-                newMenu();
+                function (err, res) {
+                    if (err) throw err;
+                    console.log(`${res.affectedRows} New Department Added`.green);
+                    newMenu();
                 });
         });
 }
@@ -110,8 +153,8 @@ function newMenu() {
                 'Exit'
             ]
         })
-        .then(function(response) {
-            switch(response.menu) {
+        .then(function (response) {
+            switch (response.menu) {
                 case 'Return to Main Menu':
                     supervisorMenu();
                     break;
