@@ -31,7 +31,7 @@ function supervisorMenu() {
             type: 'list',
             message: 'What would you like to do?'.yellow,
             choices: ['View Product Sales by Department',
-                'View/Update Department Overhead Costs',
+                'View/Update Department',
                 'Create New Department',
                 'Exit']
         })
@@ -75,57 +75,121 @@ function departmentSales() {
 }
 
 function updateDepartment() {
-    deptIDArray = [];
-    connection.query(queryAll, function (err, res) {
-            if (err) throw err;
-            console.table(res);
-            for (let n = 0; n < res.length; n++) {
-                deptIDArray.push(res[n].department_id);
+    inquirer
+        .prompt(
+            {
+                name: 'pick',
+                type: 'list',
+                message: 'Would you like to:?'.yellow,
+                choices: [
+                    'Update Overhead',
+                    'Remove Department',
+                    'Exit to Main Menu'
+                ]
             }
-            inquirer
-                .prompt(
-                    {
-                        name: 'pick',
-                        type: 'list',
-                        message: 'Would you like to:?'.yellow,
-                        choices: [
-                            'Update Overhead',
-                            'Remove Department',
-                            'Exit'
-                        ]
-                    },
-                    {
-                        name: 'ID',
-                        type: 'input',
-                        message: 'What is the ID number?'.red,
-                        validate: function(value) {
-                            return isNaN(value) === false;
-                        }
-                    })
-                .then(function (response) {
-                    let funcone = response.pick;
-                    let functwo = parseInt(response.ID);
-                    switch (response.pick) {
-                        case 'Update Overhead':
-                            update(funcone, functwo);
-                            break;
-                        case 'Remove Department':
-                            rmDept(funcone, functwo);
-                            break;
-                        case 'Exit':
-                            connection.end();
-                            break;
-                    }
-                });
-        }
-    )
+        )
+        .then(function (response) {
+            switch (response.pick) {
+                case 'Update Overhead':
+                    update();
+                    break;
+                case 'Remove Department':
+                    rmDept();
+                    break;
+                case 'Exit to Main Menu':
+                    supervisorMenu();
+                    break;
+            }
+        });
 }
 
 function update() {
-
+    deptIDArray = [];
+    connection.query(queryAll, function (err, res) {
+        if (err) throw err;
+        console.table(res);
+        for (let n = 0; n < res.length; n++) {
+            deptIDArray.push(res[n].department_id);
+        }
+        inquirer
+            .prompt([
+                {
+                    name: 'id',
+                    type: 'input',
+                    message: 'What is the ID number?'.red,
+                    validate: function (value) {
+                        return isNaN(value) === false;
+                    }
+                },
+                {
+                    name: 'overhead',
+                    type: 'input',
+                    message: 'What is the new overhead?'.red,
+                    validate: function (value) {
+                        return isNaN(value) === false;
+                    }
+                }
+            ])
+            .then(function (response) {
+                if (deptIDArray.indexOf(parseInt(response.id)) > -1) {
+                    connection.query(`UPDATE departments SET ? WHERE ?`,
+                        [
+                            {
+                                over_head_costs: response.overhead
+                            },
+                            {
+                                department_id: response.id
+                            }
+                        ],
+                        function (err, res) {
+                            if (err) throw err;
+                            console.log(`${res.affectedRows} overhead updated.`);
+                            supervisorMenu();
+                        });
+                } else {
+                    console.log(`That is not an acceptable ID number.`.red);
+                    updateDepartment();
+                }
+            });
+    });
 }
 
 function rmDept() {
+    deptIDArray = [];
+    connection.query(queryAll, function (err, res) {
+        if (err) throw err;
+        console.table(res);
+        for (let n = 0; n < res.length; n++) {
+            deptIDArray.push(res[n].department_id);
+        }
+        inquirer
+            .prompt(
+                {
+                    name: 'id',
+                    type: 'input',
+                    message: 'What is the ID number of the department you would like to remove?'.red,
+                    validate: function (value) {
+                        return isNaN(value) === false;
+                    }
+                }
+            )
+            .then(function (response) {
+                if (deptIDArray.indexOf(parseInt(response.id)) > -1) {
+                    connection.query(`DELETE from departments WHERE ?`,
+                        {
+                            department_id: response.id
+                        },
+                        function (err, res) {
+                            if (err) throw err;
+                            console.log(`${res.affectedRows} department deleted.`);
+                            supervisorMenu();
+                        })
+                } else {
+                    console.log(`That is not an acceptable ID number.`.red);
+                    updateDepartment();
+                }
+            });
+    });
 
 }
 
