@@ -10,6 +10,7 @@ const queryWhere = "WHERE ?";
 const queryUpdate = "UPDATE products SET ?";
 const queryNew = "INSERT INTO products SET ?";
 let idArray;
+let deptArray;
 
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -69,7 +70,7 @@ function viewInventory() {
 }
 
 function lowInventory() {
-    connection.query(`SELECT * FROM products WHERE stock_quantity < 100`, function (error, res) {
+    connection.query(`SELECT * FROM products WHERE stock_quantity < 50`, function (error, res) {
         if (error) throw error;
         if (res.length > 0) {
             console.table(res);
@@ -163,61 +164,67 @@ function restockMenu() {
 }
 
 function newProduct() {
-    inquirer
-        .prompt([
-            {
-                name: 'newProduct',
-                type: 'input',
-                message: 'What is the name of the new product?'.magenta
-            },
-            {
-                name: 'newDepartment',
-                type: 'list',
-                message: 'What is the Department for this new product?'.cyan,
-                choices: [
-                    'Apparel', 'Arts & Crafts', 'Automotive', 'Baby', 'Electronics', 'Food',
-                    'Furniture', 'Health & Beauty', 'Home & Office', 'Jewelry', 'Pet',
-                    'Seasonal', 'Sporting Goods', 'Tools', 'Toys & Games', 'Everything Else'
-                ]
-            },
-            {
-                name: 'newPrice',
-                type: 'input',
-                message: `What is the new product's price?`.green,
-                validate: function (value) {
-                    return isNaN(value) === false;
-                }
-            },
-            {
-                name: 'newQuantity',
-                type: 'input',
-                message: 'How many should be added to the inventory?'.yellow,
-                validate: function (value) {
-                    return isNaN(value) === false;
-                }
-            }
-        ])
-        .then(function (answers) {
-            let newPrice = (Math.floor(parseFloat(answers.newPrice) * 100) / 100); // Convert to number with accurate 2 decimal places.
-            let newQuantity = parseInt(answers.newQuantity); // Convert to number, remove decimals (you can't have half a product.
-            connection.query(queryNew,
-                {
-                    product_name: answers.newProduct,
-                    department_name: answers.newDepartment,
-                    price: newPrice,
-                    stock_quantity: newQuantity
-                },
-                function (err, res) {
-                    console.log(`${res.affectedRows} New Product added to the Stock System.`.green);
-                    newMenu();
-                });
-
-            /*console.log(answers.newProduct);
-            console.log(answers.newDepartment);
-            console.log(newPrice);
-            console.log(parseInt(answers.newQuantity));
-            connection.end();*/
+    deptArray = [];
+    connection.query("SELECT department_name FROM departments", function (error, res) {
+        if (error) throw error;
+        res.forEach(item => {
+            deptArray.push(item.department_name);
         });
+        inquirer
+            .prompt([
+                {
+                    name: 'newProduct',
+                    type: 'input',
+                    message: 'What is the name of the new product?'.magenta
+                },
+                {
+                    name: 'newDepartment',
+                    type: 'list',
+                    message: 'What is the Department for this new product?'.cyan,
+                    choices: deptArray.toString().split(',')
+                    /*choices: [
+                        'Apparel', 'Arts & Crafts', 'Automotive', 'Baby', 'Electronics', 'Food',
+                        'Furniture', 'Health & Beauty', 'Home & Office', 'Jewelry', 'Pet',
+                        'Seasonal', 'Sporting Goods', 'Tools', 'Toys & Games', 'Everything Else'
+                    ]*/
+                },
+                {
+                    name: 'newPrice',
+                    type: 'input',
+                    message: `What is the new product's price?`.green,
+                    validate: function (value) {
+                        return isNaN(value) === false;
+                    }
+                },
+                {
+                    name: 'newQuantity',
+                    type: 'input',
+                    message: 'How many should be added to the inventory?'.yellow,
+                    validate: function (value) {
+                        return isNaN(value) === false;
+                    }
+                }
+            ])
+            .then(function (answers) {
+                console.log(answers.newDepartment);
+                console.log(typeof answers.newDepartment);
+                let newPrice = (Math.floor(parseFloat(answers.newPrice) * 100) / 100); // Convert to number with accurate 2 decimal places.
+                let newQuantity = parseInt(answers.newQuantity); // Convert to number, remove decimals (you can't have half a product.
+                connection.query(queryNew,
+                    {
+                        product_name: answers.newProduct,
+                        department_name: answers.newDepartment,
+                        price: newPrice,
+                        stock_quantity: newQuantity
+                    },
+                    function (err, res) {
+                        console.log(`${res.affectedRows} New Product added to the Stock System.`.green);
+                        newMenu();
+                    });
+
+            });
+    });
+
 }
 
 function newMenu() {
