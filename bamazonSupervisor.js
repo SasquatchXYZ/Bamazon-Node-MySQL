@@ -54,20 +54,16 @@ function supervisorMenu() {
 }
 
 function departmentSales() {
-    let test3 = `SELECT department_id.departments, department_name.departments, over_head_costs.department, department_name.products, (SUM(product_sales) AS product_sales FROM products GROUP BY department_name) FROM departments LEFT JOIN product_sales ON department_name.departments=department_name.products`;
     let newCol1 = `SELECT department_name, SUM(product_sales) AS product_sales FROM products GROUP BY department_name`;
     let test = `SELECT * FROM departments`;
-    let test2 = `SELECT departments.department_id, departments.department_name, departments.over_head_costs, products.department_name, products.product_sales FROM departments LEFT JOIN products.product_sales ON departments.department_name=products.department_name`;
-
-    let test4 = `SELECT * FROM departments LEFT JOIN department_name, SUM(product_sales) AS product_sales FROM products GROUP BY department_name ON departments.department_name=products.department_name`;
-    let test5 = `SELECT * FROM departments LEFT JOIN products ON departments.department_name=products.department_name`;
-
-    let test6 = `SELECT departments.*, products.product_sales FROM departments LEFT JOIN products ON departments.department_name=products.department_name`;
-    let test7 = `SELECT departments.*, SUM(products.product_sales) AS product_sales FROM departments LEFT JOIN products ON departments.department_name=products.department_name GROUP BY department_name ORDER BY department_id ASC`;
     let test8 = `SELECT departments.*, SUM(products.product_sales) AS product_sales, (SUM(products.product_sales) - departments.over_head_costs) AS total_profit FROM departments LEFT JOIN products ON departments.department_name=products.department_name GROUP BY department_name ORDER BY department_id ASC`;
+    
+    let query = `SELECT departments.*, SUM(products.product_sales) AS product_sales, (SUM(products.product_sales) - departments.over_head_costs) AS total_profit`;
+    query +=` FROM departments LEFT JOIN products ON departments.department_name=products.department_name`;
+    query +=` GROUP BY department_name ORDER BY department_id ASC`;
 
 
-    connection.query(test8, function (err, res) {
+    connection.query(query, function (err, res) {
         if (err) throw err;
         console.table(res);
         supervisorMenu();

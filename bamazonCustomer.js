@@ -27,7 +27,7 @@ connection.connect(function (err) {
 });
 
 function displayInventory() {
-    connection.query(queryAll, function (err, res) {
+    connection.query(customerQuery, function (err, res) {
         if (err) throw err;
         idArray = [];
         console.table(res);
