@@ -57,7 +57,7 @@ function departmentSales() {
     let newCol1 = `SELECT department_name, SUM(product_sales) AS product_sales FROM products GROUP BY department_name`;
     let test = `SELECT * FROM departments`;
     let test8 = `SELECT departments.*, SUM(products.product_sales) AS product_sales, (SUM(products.product_sales) - departments.over_head_costs) AS total_profit FROM departments LEFT JOIN products ON departments.department_name=products.department_name GROUP BY department_name ORDER BY department_id ASC`;
-    
+
     let query = `SELECT departments.*, SUM(products.product_sales) AS product_sales, (SUM(products.product_sales) - departments.over_head_costs) AS total_profit`;
     query +=` FROM departments LEFT JOIN products ON departments.department_name=products.department_name`;
     query +=` GROUP BY department_name ORDER BY department_id ASC`;

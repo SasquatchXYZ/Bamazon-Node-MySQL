@@ -210,7 +210,7 @@ function newProduct() {
                 function (err, res) {
                     console.log(`${res.affectedRows} New Product added to the Stock System.`.green);
                     newMenu();
-                })
+                });
 
             /*console.log(answers.newProduct);
             console.log(answers.newDepartment);
