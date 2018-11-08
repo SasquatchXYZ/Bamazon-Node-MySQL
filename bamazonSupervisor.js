@@ -64,9 +64,10 @@ function departmentSales() {
 
     let test6 = `SELECT departments.*, products.product_sales FROM departments LEFT JOIN products ON departments.department_name=products.department_name`;
     let test7 = `SELECT departments.*, SUM(products.product_sales) AS product_sales FROM departments LEFT JOIN products ON departments.department_name=products.department_name GROUP BY department_name ORDER BY department_id ASC`;
+    let test8 = `SELECT departments.*, SUM(products.product_sales) AS product_sales, (SUM(products.product_sales) - departments.over_head_costs) AS total_profit FROM departments LEFT JOIN products ON departments.department_name=products.department_name GROUP BY department_name ORDER BY department_id ASC`;
 
 
-    connection.query(test7, function (err, res) {
+    connection.query(test8, function (err, res) {
         if (err) throw err;
         console.table(res);
         supervisorMenu();
