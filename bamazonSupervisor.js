@@ -61,6 +61,8 @@ function supervisorMenu() {
         });
 }
 
+// Supervisor Case 1 ===================================================================================================
+
 function departmentSales() {
     let newCol1 = `SELECT department_name, SUM(product_sales) AS product_sales FROM products GROUP BY department_name`;
     let test = `SELECT * FROM departments`;
@@ -77,6 +79,8 @@ function departmentSales() {
         supervisorMenu();
     });
 }
+
+// Supervisor Case 2 ===================================================================================================
 
 function updateDepartment() {
     inquirer
@@ -196,6 +200,8 @@ function rmDept() {
     });
 
 }
+
+// Supervisor Case 3 ===================================================================================================
 
 function createDepartment() {
     inquirer
