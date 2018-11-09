@@ -1,9 +1,13 @@
 'use strict';
 
+// Required Modules ====================================================================================================
+
 const colors = require('colors');
 const inquirer = require('inquirer');
 const mysql = require('mysql');
 const cTable = require('console.table');
+
+// Various Query Options ===============================================================================================
 
 const queryAll = "SELECT * FROM products";
 const queryAllButSales = "SELECT item_id, product_name, department_name, price, stock_quantity FROM products";
@@ -12,6 +16,8 @@ const queryUpdate = "UPDATE products SET ?";
 const queryNew = "INSERT INTO products SET ?";
 let idArray;
 let deptArray;
+
+// Creating the MySQL Connection =======================================================================================
 
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -26,6 +32,8 @@ connection.connect(function (error) {
     //console.log(`Connected as ID: ${connection.threadId}`);
     managerMenu();
 });
+
+// Initial Manager Menu ================================================================================================
 
 function managerMenu() {
     inquirer
@@ -215,8 +223,6 @@ function newProduct() {
                 }
             ])
             .then(function (answers) {
-                console.log(answers.newDepartment);
-                console.log(typeof answers.newDepartment);
                 let newPrice = (Math.floor(parseFloat(answers.newPrice) * 100) / 100); // Convert to number with accurate 2 decimal places.
                 let newQuantity = parseInt(answers.newQuantity); // Convert to number, remove decimals (you can't have half a product.
                 connection.query(queryNew,

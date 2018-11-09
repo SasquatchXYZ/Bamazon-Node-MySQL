@@ -1,15 +1,21 @@
 'use strict';
 
+// Required Modules ====================================================================================================
+
 const colors = require('colors');
 const inquirer = require('inquirer');
 const mysql = require('mysql');
 const cTable = require('console.table');
+
+// Various Query Options ===============================================================================================
 
 const customerQuery = "SELECT item_id, product_name, price FROM products";
 const queryAll = "SELECT * FROM products";
 const queryWhere = "WHERE ?";
 const queryUpdate = "UPDATE products SET ?";
 let idArray;
+
+// Creating the MySQL Connection =======================================================================================
 
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -25,6 +31,8 @@ connection.connect(function (err) {
     //connection.end();
     displayInventory();
 });
+
+// Initial Customer Display of Products and Prompt for Purchase ========================================================
 
 function displayInventory() {
     connection.query(customerQuery, function (err, res) {
@@ -86,6 +94,8 @@ function queryUsers() {
         });
 }
 
+// Updating the product_sales information for the purchased option following successful purchase =======================
+
 function updateProductSales(id, sales) {
     connection.query(`SELECT product_sales FROM products ${queryWhere}`, {item_id: id}, function (err, res) {
         if (err) throw err;
@@ -97,6 +107,8 @@ function updateProductSales(id, sales) {
         })
     });
 }
+
+// Function to allow the Customer to Exit Bamazon ======================================================================
 
 function exitOption() {
     inquirer
@@ -116,7 +128,7 @@ function exitOption() {
         });
 }
 
-
+// =====================================================================================================================
 // This is reserved for if the store expands and has a very large amount of different items
 // (i.e Walmart or Target), where instead of a list of the item IDs the customer can scroll through,
 // which might take eons with 200+ items.  The customer will simply be able to enter the number.

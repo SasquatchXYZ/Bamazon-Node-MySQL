@@ -1,14 +1,20 @@
 'use strict';
 
+// Required Modules ====================================================================================================
+
 const colors = require('colors');
 const inquirer = require('inquirer');
 const mysql = require('mysql');
 const cTable = require('console.table');
 
+// Various Query Options ===============================================================================================
+
 const queryAll = "SELECT * FROM departments";
 const queryNew = "INSERT INTO departments SET ?";
 
 let deptIDArray;
+
+// Creating the MySQL Connection =======================================================================================
 
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -23,6 +29,8 @@ connection.connect(function (err) {
     //console.log(`Connected as ID: ${connection.threadId}`);
     supervisorMenu();
 });
+
+// Initial Supervisor Menu =============================================================================================
 
 function supervisorMenu() {
     inquirer
