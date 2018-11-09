@@ -1,10 +1,9 @@
 # Bamazon-Node-MySQL
 
-#####Homework 12 - Node.js &amp; MySQL Storefront CLI App
+##### Homework 12 - Node.js &amp; MySQL Storefront CLI App
 
 Bamazon is an Amazon-like storefront CLI application created using Node.js and MySQL as the database for storing the information.  The application has three different JavaScript files that can be run either from the perspective of the Customer, Manager, or Supervisor; each of which allows the user to interact differently with the store.
 
-![LIRI-Node-App](screenshots/LIRIBotv2.gif) 
 
 ## Getting Started
 
