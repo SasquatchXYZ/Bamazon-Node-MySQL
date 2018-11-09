@@ -6,6 +6,7 @@ const mysql = require('mysql');
 const cTable = require('console.table');
 
 const queryAll = "SELECT * FROM products";
+const queryAllButSales = "SELECT item_id, product_name, department_name, price, stock_quantity FROM products";
 const queryWhere = "WHERE ?";
 const queryUpdate = "UPDATE products SET ?";
 const queryNew = "INSERT INTO products SET ?";
@@ -61,16 +62,20 @@ function managerMenu() {
         });
 }
 
+// Manager Case 1 ======================================================================================================
+
 function viewInventory() {
-    connection.query(queryAll, function (error, res) {
+    connection.query(queryAllButSales, function (error, res) {
         if (error) throw error;
         console.table(res);
         managerMenu();
     });
 }
 
+// Manager Case 2 ======================================================================================================
+
 function lowInventory() {
-    connection.query(`SELECT * FROM products WHERE stock_quantity < 50`, function (error, res) {
+    connection.query(`${queryAllButSales} WHERE stock_quantity < 50`, function (error, res) {
         if (error) throw error;
         if (res.length > 0) {
             console.table(res);
@@ -81,6 +86,8 @@ function lowInventory() {
         }
     });
 }
+
+// Manager Case 3 ======================================================================================================
 
 function restockInfo() {
     idArray = [];
@@ -162,6 +169,8 @@ function restockMenu() {
             }
         });
 }
+
+// Manager Case 4 ======================================================================================================
 
 function newProduct() {
     deptArray = [];
