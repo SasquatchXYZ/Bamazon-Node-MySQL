@@ -19,6 +19,7 @@
   "homepage": "https://github.com/SasquatchXYZ/Bamazon-Node-MySQL#readme",
   "dependencies": {
     "colors": "^1.3.2",
+    "console-table": "^0.1.2",
     "console.table": "^0.10.0",
     "inquirer": "^6.2.0",
     "mysql": "^2.16.0"
